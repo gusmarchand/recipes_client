@@ -17,6 +17,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screens/Home";
 import TestScreen from "./screens/Test";
 import NewRecipeScreen from "./screens/NewRecipe";
+import AllRecipesScreen from "./screens/AllRecipes";
+import RecipeScreen from "./screens/Recipe";
 
 // Define the config
 const config = {
@@ -39,6 +41,8 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Test" component={TestScreen} />
         <Stack.Screen name="NewRecipe" component={NewRecipeScreen} />
+        <Stack.Screen name="AllRecipes" component={AllRecipesScreen} />
+        <Stack.Screen name="Recipe" component={RecipeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

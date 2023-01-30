@@ -77,6 +77,13 @@ const Home: FC<HomeProps> = ({ navigation }) => {
           >
             <Text>Ajouter une recette</Text>
           </Button>
+          <Button
+            small
+            primary
+            onPress={() => navigation.navigate("AllRecipes")}
+          >
+            <Text>Voir toutes les recettes</Text>
+          </Button>
           <ImagePicker />
         </VStack>
       </Center>
