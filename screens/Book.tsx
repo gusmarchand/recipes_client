@@ -20,7 +20,7 @@ interface AllBooksProps {
   route?: any;
 }
 
-interface BookProps {
+export interface BookProps {
   title: string;
   author: string;
   imgUrl?: string;
@@ -47,8 +47,6 @@ const Book: FC<AllBooksProps> = ({ navigation, route }) => {
     };
     fetchBook();
   }, [route.params]);
-
-  console.log(book?.imgUrl);
 
   // ! TODO - Add recipeCard component
   return (

@@ -1,19 +1,8 @@
-import { View } from "react-native";
 import React, { FC, useEffect, useState } from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Button,
-} from "native-base";
+import { Text, Center, NativeBaseProvider } from "native-base";
+
+import { RecipeCard } from "../components/Cards";
+import { BookProps } from "./Book";
 
 interface AllRecipesProps {
   navigation?: any;
@@ -21,10 +10,11 @@ interface AllRecipesProps {
 }
 
 interface Recipe {
-  title: string;
-  description: string;
-  category: string;
-  page: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  page?: string;
+  book?: string;
 }
 
 const Recipe: FC<AllRecipesProps> = ({ navigation, route }) => {
@@ -58,8 +48,7 @@ const Recipe: FC<AllRecipesProps> = ({ navigation, route }) => {
         px={4}
         flex={1}
       >
-        <Text>{recipe?.title}</Text>
-        <Text>{recipe?.page}</Text>
+        <RecipeCard recipe={recipe} navigation={navigation}></RecipeCard>
       </Center>
     </NativeBaseProvider>
   );

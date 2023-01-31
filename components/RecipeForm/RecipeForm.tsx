@@ -1,21 +1,9 @@
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 
-import {
-  FormControl,
-  Input,
-  Stack,
-  Button,
-  Modal,
-  Popover,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Heading,
-  Center,
-  Select,
-} from "native-base";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+import { FormControl, Input, Stack, Button, Modal, Select } from "native-base";
 import BookForm from "../BookForm";
 
 const RecipeForm = () => {
@@ -23,12 +11,10 @@ const RecipeForm = () => {
 
   const [recipeName, setRecipeName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
+  const [category, setCategory] = useState<string>("entree");
   const [page, setPage] = useState<string>("");
   const [books, setBooks] = useState<any>([]);
   const [selectedBook, setSelectedBook] = useState<string>("");
-
-  console.log("selectedBook", selectedBook);
 
   const handleSubmit = async () => {
     const data = {
@@ -46,7 +32,6 @@ const RecipeForm = () => {
       body: JSON.stringify(data),
     });
     const resData = await res.json();
-    console.log(resData);
   };
 
   useEffect(() => {
@@ -72,7 +57,7 @@ const RecipeForm = () => {
         <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
           <Modal.Content maxWidth="400px">
             <Modal.CloseButton />
-            <Modal.Header>Contact Us</Modal.Header>
+            <Modal.Header>Ajouter un livre</Modal.Header>
             <Modal.Body>
               <BookForm setModalOpen={setShowModal} isFromRecipeForm={true} />
             </Modal.Body>
@@ -83,74 +68,93 @@ const RecipeForm = () => {
   };
 
   return (
-    <FormControl>
-      <Stack space={5}>
-        <Stack>
-          <FormControl.Label>Titre de la recette</FormControl.Label>
-          <Input
-            variant="underlined"
-            p={2}
-            placeholder="titre"
-            value={recipeName}
-            onChange={(e) => setRecipeName(e.nativeEvent.text)}
-          />
-        </Stack>
-        <Stack>
-          <FormControl.Label>Catégorie</FormControl.Label>
-          <Select defaultValue="entree" onValueChange={(e) => setCategory(e)}>
-            <Select.Item label="Entrée ou apéro" value="entree" />
-            <Select.Item label="Plat" value="plat" />
-            <Select.Item label="Dessert" value="dessert" />
-          </Select>
-        </Stack>
-        <Stack space={3}>
+    <KeyboardAwareScrollView style={styles.container}>
+      <FormControl style={styles.content}>
+        <Stack space={5}>
           <Stack>
-            <FormControl.Label>Livre</FormControl.Label>
+            <FormControl.Label>Titre de la recette</FormControl.Label>
+            <Input
+              variant="underlined"
+              p={2}
+              placeholder="titre"
+              value={recipeName}
+              onChange={(e) => setRecipeName(e.nativeEvent.text)}
+            />
+          </Stack>
+          <Stack>
+            <FormControl.Label>Catégorie</FormControl.Label>
             <Select
-              placeholder="Choisir un livre"
-              onValueChange={(e) => setSelectedBook(e)}
+              defaultValue={category}
+              onValueChange={(e) => setCategory(e)}
             >
-              {books.map((book: { _id: string; title: string }) => {
-                return (
-                  <Select.Item
-                    key={book._id}
-                    label={book.title}
-                    value={book._id}
-                  />
-                );
-              })}
+              <Select.Item label="Entrée ou apéro" value="entree" />
+              <Select.Item label="Plat" value="plat" />
+              <Select.Item label="Dessert" value="dessert" />
             </Select>
           </Stack>
-          <Stack alignItems="flex-end" h={8}>
-            <BookModal />
+          <Stack space={3}>
+            <Stack>
+              <FormControl.Label>Livre</FormControl.Label>
+              <Select
+                placeholder="Choisir un livre"
+                onValueChange={(e) => setSelectedBook(e)}
+              >
+                {books.map((book: { _id: string; title: string }) => {
+                  return (
+                    <Select.Item
+                      key={book._id}
+                      label={book.title}
+                      value={book._id}
+                    />
+                  );
+                })}
+              </Select>
+            </Stack>
+            <Stack alignItems="flex-end" h={8}>
+              <BookModal />
+            </Stack>
           </Stack>
-        </Stack>
-        <Stack>
-          <FormControl.Label>Description</FormControl.Label>
-          <Input
-            value={description}
-            onChange={(e) => setDescription(e.nativeEvent.text)}
-            variant="underlined"
-            p={2}
-            placeholder="Petite description"
-          />
-        </Stack>
+          <Stack>
+            <FormControl.Label>Description</FormControl.Label>
+            <Input
+              value={description}
+              onChange={(e) => setDescription(e.nativeEvent.text)}
+              variant="underlined"
+              p={2}
+              placeholder="Petite description"
+            />
+          </Stack>
 
-        <Stack>
-          <FormControl.Label>Page</FormControl.Label>
-          <Input
-            value={page}
-            onChange={(e) => setPage(e.nativeEvent.text)}
-            variant="underlined"
-            p={2}
-            placeholder="Numéro de page"
-          />
-        </Stack>
+          <Stack>
+            <FormControl.Label>Page</FormControl.Label>
+            <Input
+              value={page}
+              onChange={(e) => setPage(e.nativeEvent.text)}
+              variant="underlined"
+              p={2}
+              placeholder="Numéro de page"
+            />
+          </Stack>
 
-        <Button onPress={handleSubmit}>Soumettre</Button>
-      </Stack>
-    </FormControl>
+          <Button onPress={handleSubmit}>Soumettre</Button>
+        </Stack>
+      </FormControl>
+    </KeyboardAwareScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: "20%",
+    width: "100%",
+    flex: 1,
+  },
+  content: {
+    width: "100%",
+    flex: 1,
+
+    padding: 20,
+  },
+});
 
 export default RecipeForm;

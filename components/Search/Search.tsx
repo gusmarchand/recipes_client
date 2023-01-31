@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
-import React, { FC, useState, useEffect } from "react";
-import { Input, FormControl, Modal } from "native-base";
+import React, { FC, useState, useEffect, useRef } from "react";
+import { Input, FormControl } from "native-base";
 import { normalize } from "../../utils/";
 
 interface SearchProps {
@@ -12,8 +12,17 @@ const Search: FC<SearchProps> = ({ navigation }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
 
+  const inputRef = useRef<HTMLElement>(null);
+
   const handleChangeTerm = (e: any) => {
     setSearchTerm(normalize(e.nativeEvent.text));
+  };
+
+  const handlePressSuggestion = (id: string, items: string) => {
+    setSearchTerm("");
+    setShowModal(false);
+    inputRef?.current?.blur();
+    navigation.navigate(items, id);
   };
 
   useEffect(() => {
@@ -42,14 +51,13 @@ const Search: FC<SearchProps> = ({ navigation }) => {
 
   if (data?.length === 0) return null;
 
-  // ! todo: add fonction to remove accents
-
   return (
     <FormControl style={{ position: "absolute", width: "100%" }}>
       <FormControl.Label>
         Recherche de recettes, livres, auteurs...
       </FormControl.Label>
       <Input
+        ref={inputRef}
         value={searchTerm}
         onChange={handleChangeTerm}
         placeholder="Rechercher"
@@ -65,15 +73,14 @@ const Search: FC<SearchProps> = ({ navigation }) => {
               );
             })
             .map((val: any) => {
-              const items = val?.author ? "Book" : "Recipe";
+              const item = val?.author ? "Book" : "Recipe";
               const type = val?.author ? "Livre" : "Recette";
 
               return (
                 <View key={val._id} style={styles.searchResult}>
                   <Text
                     onPress={() => {
-                      console.log(val._id);
-                      navigation.navigate(items, val._id);
+                      handlePressSuggestion(val._id, item);
                     }}
                   >
                     {val.title || val.author} -{" "}

@@ -1,4 +1,12 @@
-import { View, Text, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  KeyboardAvoidingView,
+  Image,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import React, { FC, useEffect, useState } from "react";
 
 import {
@@ -6,6 +14,7 @@ import {
   Input,
   Stack,
   Button,
+  HStack,
   NativeBaseProvider,
   extendTheme,
   VStack,
@@ -13,7 +22,14 @@ import {
   Heading,
   Center,
   Select,
+  ScrollView,
+  Icon,
 } from "native-base";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
+
+import * as ImagePicker from "expo-image-picker";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 interface BookFormProps {
   setModalOpen?: any;
@@ -30,9 +46,48 @@ const BookForm: FC<BookFormProps> = ({
   const [author, setAuthor] = useState<string>("");
   const [imgUrl, setImgUrl] = useState<string>("");
 
+  const [image, setImage] = useState<any>("");
+
   const [isbn, setIsbn] = useState<string>("");
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   const handleSubmitForm = async () => {
+    const imageToFetch = {
+      uri: image,
+      type: "image/jpeg",
+      name: "image.jpg",
+    };
+
+    const dataToCloudinary = new FormData();
+    dataToCloudinary.append("file", imageToFetch as any);
+    dataToCloudinary.append("upload_preset", "qnktrbpo");
+
+    const postImgToCloudinary = await fetch(
+      "https://api.cloudinary.com/v1_1/gusappprecipes/image/upload",
+      {
+        method: "POST",
+        body: dataToCloudinary,
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        return data;
+      });
+
+    setImgUrl(postImgToCloudinary.secure_url);
+
     const data = {
       title,
       author,
@@ -50,7 +105,7 @@ const BookForm: FC<BookFormProps> = ({
     if (resData._id) {
       setAuthor("");
       setTitle("");
-      setImgUrl("");
+      setImage("");
       !isFromRecipeForm && navigation.navigate("AllBooks");
       setModalOpen && setModalOpen(false);
     }
@@ -89,13 +144,14 @@ const BookForm: FC<BookFormProps> = ({
       setAuthor(resData.items[0].volumeInfo.authors[0]);
     }
     if (bookImgUrl) {
-      setImgUrl(`https://covers.openlibrary.org/b/isbn/${_isbn}-M.jpg`);
+      setImage(bookImgUrl);
+      setImgUrl(bookImgUrl);
     }
   };
 
   return (
-    <>
-      <FormControl>
+    <KeyboardAwareScrollView style={styles.container}>
+      <FormControl style={styles.content}>
         <Stack space={5}>
           <Stack>
             <FormControl.Label>Titre du livre</FormControl.Label>
@@ -117,20 +173,25 @@ const BookForm: FC<BookFormProps> = ({
               onChange={(e) => setAuthor(e.nativeEvent.text)}
             />
           </Stack>
-          <Stack>
+          <HStack pt="4" justifyContent="space-between" alignItems="center">
             <FormControl.Label>Image</FormControl.Label>
-            <Input
-              value={imgUrl}
-              onChange={(e) => setImgUrl(e.nativeEvent.text)}
-              variant="underlined"
-              p={2}
-              placeholder="Petite description"
-            />
-          </Stack>
+            <Pressable onPress={pickImage}>
+              <Icon
+                as={Ionicons}
+                name="image-outline"
+                size="xl"
+                color="blue.300"
+              />
+            </Pressable>
+            {image && (
+              <Image
+                source={{ uri: image }}
+                style={{ width: 250, height: 400, resizeMode: "contain" }}
+              />
+            )}
+          </HStack>
           <Button onPress={handleSubmitForm}>Soumettre</Button>
         </Stack>
-      </FormControl>
-      <FormControl>
         <Stack space={5}>
           <Stack>
             <FormControl.Label>ISBN</FormControl.Label>
@@ -145,8 +206,22 @@ const BookForm: FC<BookFormProps> = ({
           <Button onPress={handleSubmitIsbn}>whith ISBN</Button>
         </Stack>
       </FormControl>
-    </>
+    </KeyboardAwareScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: "20%",
+    width: "100%",
+    flex: 1,
+  },
+  content: {
+    width: "100%",
+    flex: 1,
+
+    padding: 20,
+  },
+});
 
 export default BookForm;
