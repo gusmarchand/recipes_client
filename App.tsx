@@ -1,4 +1,5 @@
 import React from "react";
+import { SSRProvider } from "@react-aria/ssr";
 import {
   Text,
   Link,
@@ -19,6 +20,9 @@ import TestScreen from "./screens/Test";
 import NewRecipeScreen from "./screens/NewRecipe";
 import AllRecipesScreen from "./screens/AllRecipes";
 import RecipeScreen from "./screens/Recipe";
+import BookScreen from "./screens/Book";
+import NewBookScreen from "./screens/NewBook";
+import AllBooksScreen from "./screens/AllBooks";
 
 // Define the config
 const config = {
@@ -36,15 +40,20 @@ declare module "native-base" {
 }
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Test" component={TestScreen} />
-        <Stack.Screen name="NewRecipe" component={NewRecipeScreen} />
-        <Stack.Screen name="AllRecipes" component={AllRecipesScreen} />
-        <Stack.Screen name="Recipe" component={RecipeScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SSRProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Test" component={TestScreen} />
+          <Stack.Screen name="NewRecipe" component={NewRecipeScreen} />
+          <Stack.Screen name="AllRecipes" component={AllRecipesScreen} />
+          <Stack.Screen name="Recipe" component={RecipeScreen} />
+          <Stack.Screen name="NewBook" component={NewBookScreen} />
+          <Stack.Screen name="AllBooks" component={AllBooksScreen} />
+          <Stack.Screen name="Book" component={BookScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SSRProvider>
   );
 }
 

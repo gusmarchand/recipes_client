@@ -1,5 +1,5 @@
 import { View, Alert } from "react-native";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Text,
   Link,
@@ -13,29 +13,19 @@ import {
   VStack,
   Box,
   Button,
+  Stack,
 } from "native-base";
 import ImagePicker from "../components/ImagePicker";
+import { Search } from "../components";
+
+// import { useNavigation } from "@react-navigation/native";
+
+// const navigation = useNavigation();
 interface HomeProps {
   navigation?: any;
 }
 
 const Home: FC<HomeProps> = ({ navigation }) => {
-  const handlePress = async () => {
-    console.log("Pressed");
-    const res = await fetch(`http://192.168.86.247:3001/test`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await res.json();
-    console.log(data);
-    if (data) {
-      Alert.alert(data.message);
-    }
-
-    // await console.log(res);
-  };
   return (
     <NativeBaseProvider>
       <Center
@@ -44,49 +34,60 @@ const Home: FC<HomeProps> = ({ navigation }) => {
         px={4}
         flex={1}
       >
-        <VStack space={5} alignItems="center">
-          <Heading size="lg">Welcome to NativeBase</Heading>
-          <HStack space={2} alignItems="center">
-            <Text>Edit</Text>
-            <Box
-              _web={{
-                _text: {
-                  fontFamily: "monospace",
-                  fontSize: "sm",
-                },
-              }}
-              px={2}
-              py={1}
-              _dark={{ bg: "blueGray.800" }}
-              _light={{ bg: "blueGray.200" }}
+        <Stack position="absolute" top="1" w="100%" zIndex="50">
+          <Search navigation={navigation}></Search>
+        </Stack>
+
+        <VStack space={5} paddingTop="30" alignItems="center">
+          <Heading size="lg">Les Recettes</Heading>
+          <HStack space={5}>
+            <Button
+              h={16}
+              width="48%"
+              primary
+              onPress={() => navigation.navigate("AllRecipes")}
             >
-              App.js
-            </Box>
-            <Text>and save to reload.</Text>
+              <Text fontSize={11} fontWeight="bold">
+                Voir toutes les recettes
+              </Text>
+            </Button>
+            <Button
+              h={16}
+              width="48%"
+              primary
+              onPress={() => navigation.navigate("NewRecipe")}
+            >
+              <Text fontSize={11} fontWeight="bold">
+                Ajouter une recette
+              </Text>
+            </Button>
           </HStack>
-          <Link href="https://docs.nativebase.io" isExternal>
-            <Text color="primary.500" underline fontSize={"xl"}>
-              Learn NativeBase
-            </Text>
-          </Link>
-          <ToggleDarkMode />
-          <Button
-            small
-            primary
-            onPress={() => navigation.navigate("NewRecipe")}
-          >
-            <Text>Ajouter une recette</Text>
-          </Button>
-          <Button
-            small
-            primary
-            onPress={() => navigation.navigate("AllRecipes")}
-          >
-            <Text>Voir toutes les recettes</Text>
-          </Button>
-          <ImagePicker />
+          <Heading size="lg">Les Livres</Heading>
+          <HStack space={5}>
+            <Button
+              h={16}
+              width="48%"
+              primary
+              onPress={() => navigation.navigate("AllBooks")}
+            >
+              <Text fontSize={11} fontWeight="bold">
+                Voir toutes les livres
+              </Text>
+            </Button>
+            <Button
+              h={16}
+              width="48%"
+              primary
+              onPress={() => navigation.navigate("NewBook")}
+            >
+              <Text fontSize={11} fontWeight="bold">
+                Ajouter un livre
+              </Text>
+            </Button>
+          </HStack>
         </VStack>
       </Center>
+      {/* <ToggleDarkMode /> */}
     </NativeBaseProvider>
   );
 };

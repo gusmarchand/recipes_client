@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import React from "react";
+import React, { FC } from "react";
 import {
   Text,
   Link,
@@ -15,9 +15,13 @@ import {
   Button,
 } from "native-base";
 
-import { RecipeForm } from "../components";
+import { BookForm } from "../components";
 
-const NewRecipe = () => {
+interface NewBookProps {
+  navigation?: any;
+}
+
+const NewBook: FC<NewBookProps> = ({ navigation }) => {
   return (
     <NativeBaseProvider>
       <Center
@@ -26,10 +30,10 @@ const NewRecipe = () => {
         px={4}
         flex={1}
       >
-        <RecipeForm />
+        <BookForm navigation={navigation} />
       </Center>
     </NativeBaseProvider>
   );
 };
 
-export default NewRecipe;
+export default NewBook;

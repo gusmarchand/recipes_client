@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import React from "react";
+import React, { FC } from "react";
 import {
   Text,
   Link,
@@ -15,9 +15,15 @@ import {
   Button,
 } from "native-base";
 
-import { RecipeForm } from "../components";
+import { BooksList } from "../components";
 
-const NewRecipe = () => {
+interface AllBooksProps {
+  navigation?: any;
+  route?: any;
+}
+
+const AllBooks: FC<AllBooksProps> = ({ navigation }) => {
+  // ! TODO - fetch here and pass array of data to RecipesList
   return (
     <NativeBaseProvider>
       <Center
@@ -26,10 +32,10 @@ const NewRecipe = () => {
         px={4}
         flex={1}
       >
-        <RecipeForm />
+        <BooksList navigation={navigation} />
       </Center>
     </NativeBaseProvider>
   );
 };
 
-export default NewRecipe;
+export default AllBooks;
