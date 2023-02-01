@@ -6,11 +6,13 @@ import {
   Center,
   Heading,
   Switch,
+  Image,
   useColorMode,
   NativeBaseProvider,
   VStack,
   Button,
   Stack,
+  Icon,
 } from "native-base";
 
 import Search from "../components/Search/Search";
@@ -20,6 +22,8 @@ interface HomeProps {
 }
 
 const Home: FC<HomeProps> = ({ navigation }) => {
+  const salad = require("../assets/salad.png");
+  const book = require("../assets/book.png");
   return (
     <NativeBaseProvider>
       <Center
@@ -32,53 +36,62 @@ const Home: FC<HomeProps> = ({ navigation }) => {
           <Search navigation={navigation}></Search>
         </Stack>
 
-        <VStack space={5} paddingTop="30" alignItems="center">
-          <Heading size="lg">Les Recettes</Heading>
-          <HStack space={5}>
-            <Button
-              h={16}
-              width="48%"
-              primary
-              onPress={() => navigation.navigate("AllRecipes")}
-            >
-              <Text fontSize={11} fontWeight="bold">
-                Voir toutes les recettes
-              </Text>
-            </Button>
-            <Button
-              h={16}
-              width="48%"
-              primary
-              onPress={() => navigation.navigate("NewRecipe")}
-            >
-              <Text fontSize={11} fontWeight="bold">
-                Ajouter une recette
-              </Text>
-            </Button>
-          </HStack>
-          <Heading size="lg">Les Livres</Heading>
-          <HStack space={5}>
-            <Button
-              h={16}
-              width="48%"
-              primary
-              onPress={() => navigation.navigate("AllBooks")}
-            >
-              <Text fontSize={11} fontWeight="bold">
-                Voir toutes les livres
-              </Text>
-            </Button>
-            <Button
-              h={16}
-              width="48%"
-              primary
-              onPress={() => navigation.navigate("NewBook")}
-            >
-              <Text fontSize={11} fontWeight="bold">
-                Ajouter un livre
-              </Text>
-            </Button>
-          </HStack>
+        <VStack space={20} paddingTop="30" px={2} alignItems="center">
+          <VStack space={5} alignItems="center">
+            <Heading size="lg">
+              Les Recettes <Image source={salad} alt="salad.png" size="xs" />
+            </Heading>
+            <HStack space={5}>
+              <Button
+                h={16}
+                width="48%"
+                primary
+                onPress={() => navigation.navigate("AllRecipes")}
+              >
+                <Text fontSize={11} fontWeight="bold">
+                  Voir toutes les recettes
+                </Text>
+              </Button>
+              <Button
+                h={16}
+                width="48%"
+                primary
+                onPress={() => navigation.navigate("NewRecipe")}
+              >
+                <Text fontSize={11} fontWeight="bold">
+                  Ajouter une recette
+                </Text>
+              </Button>
+            </HStack>
+          </VStack>
+
+          <VStack space={5} alignItems="center">
+            <Heading size="lg">
+              Les Livres <Image source={book} alt="book.png" size="xs" />
+            </Heading>
+            <HStack space={5}>
+              <Button
+                h={16}
+                width="48%"
+                primary
+                onPress={() => navigation.navigate("AllBooks")}
+              >
+                <Text fontSize={11} fontWeight="bold">
+                  Voir toutes les livres
+                </Text>
+              </Button>
+              <Button
+                h={16}
+                width="48%"
+                primary
+                onPress={() => navigation.navigate("NewBook")}
+              >
+                <Text fontSize={11} fontWeight="bold">
+                  Ajouter un livre
+                </Text>
+              </Button>
+            </HStack>
+          </VStack>
         </VStack>
       </Center>
       {/* <ToggleDarkMode /> */}
