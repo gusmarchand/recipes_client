@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Pressable } from "react-native";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import { FormControl, Input, Stack, Button, HStack, Icon } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,6 +27,21 @@ const BookForm: FC<BookFormProps> = ({
   const [image, setImage] = useState<any>("");
   const [isbn, setIsbn] = useState<string>("");
 
+  const [errorsMsg, setErrorsMsg] = useState<any>({});
+
+  const validate = () => {
+    if (title === undefined || title === "") {
+      setErrorsMsg({ ...errorsMsg, title: "Il faut un titre" });
+
+      return false;
+    }
+    if (author === undefined || author === "") {
+      setErrorsMsg({ ...errorsMsg, author: "Il faut un auteur" });
+      return false;
+    }
+    return true;
+  };
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -41,6 +56,8 @@ const BookForm: FC<BookFormProps> = ({
   };
 
   const handleSubmitForm = async () => {
+    if (!validate()) return;
+
     const imageToFetch = {
       uri: image,
       type: "image/jpeg",
@@ -49,13 +66,16 @@ const BookForm: FC<BookFormProps> = ({
 
     let imgFromCloudinary = "";
 
-    try {
-      const img = await uploadImgToCloudinary(imageToFetch);
-      if (img) {
-        imgFromCloudinary = img.secure_url;
+    if (image) {
+      try {
+        const img = await uploadImgToCloudinary(imageToFetch);
+        if (img) {
+          imgFromCloudinary = img.secure_url;
+        }
+      } catch (error) {
+        console.log("error fetch couldinary");
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
 
     const data = {
@@ -70,7 +90,7 @@ const BookForm: FC<BookFormProps> = ({
         setAuthor("");
         setTitle("");
         setImage("");
-        !isFromRecipeForm && navigation.navigate("AllBooks");
+        !isFromRecipeForm && navigation.navigate("Home");
         setModalOpen && setModalOpen(false);
       }
     } catch (error) {
@@ -101,30 +121,56 @@ const BookForm: FC<BookFormProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (title !== undefined || title !== "") {
+      setErrorsMsg({ ...errorsMsg, title: null });
+    }
+  }, [title]);
+
+  useEffect(() => {
+    if (author !== undefined || author !== "") {
+      setErrorsMsg({ ...errorsMsg, author: null });
+    }
+  }, [author]);
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <FormControl style={styles.content}>
         <Stack space={5}>
           <Stack>
-            <FormControl.Label>Titre du livre</FormControl.Label>
-            <Input
-              mandatory
-              variant="underlined"
-              p={2}
-              placeholder="titre"
-              value={title}
-              onChange={(e) => setTitle(e.nativeEvent.text)}
-            />
+            <FormControl isRequired isInvalid={errorsMsg?.title}>
+              <FormControl.Label>Titre du livre </FormControl.Label>
+              <Input
+                variant="underlined"
+                p={2}
+                placeholder="titre"
+                value={title}
+                onChange={(e) => setTitle(e.nativeEvent.text)}
+              />
+              {errorsMsg?.title && (
+                <FormControl.ErrorMessage>
+                  {errorsMsg.title}
+                </FormControl.ErrorMessage>
+              )}
+            </FormControl>
           </Stack>
+
           <Stack>
-            <FormControl.Label>Auteur</FormControl.Label>
-            <Input
-              variant="underlined"
-              p={2}
-              placeholder="auteur"
-              value={author}
-              onChange={(e) => setAuthor(e.nativeEvent.text)}
-            />
+            <FormControl isRequired isInvalid={errorsMsg?.author}>
+              <FormControl.Label>Auteur </FormControl.Label>
+              <Input
+                variant="underlined"
+                p={2}
+                placeholder="auteur"
+                value={author}
+                onChange={(e) => setAuthor(e.nativeEvent.text)}
+              />
+              {errorsMsg?.author && (
+                <FormControl.ErrorMessage>
+                  {errorsMsg.author}
+                </FormControl.ErrorMessage>
+              )}
+            </FormControl>
           </Stack>
           <HStack pt="4" justifyContent="space-between" alignItems="center">
             <FormControl.Label>Image</FormControl.Label>
@@ -172,8 +218,14 @@ const styles = StyleSheet.create({
   content: {
     width: "100%",
     flex: 1,
-
     padding: 20,
+  },
+  error: {
+    color: "red",
+    fontSize: 10,
+  },
+  inputError: {
+    borderColor: "red",
   },
 });
 

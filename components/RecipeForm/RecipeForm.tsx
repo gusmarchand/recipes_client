@@ -1,9 +1,17 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import { FormControl, Input, Stack, Button, Modal, Select } from "native-base";
+import {
+  FormControl,
+  Input,
+  Stack,
+  Button,
+  Modal,
+  Select,
+  HStack,
+} from "native-base";
 import { BookForm } from "../BookForm";
 import { createRecipe } from "../../mw/recipes";
 import { getBooks } from "../../mw/books";
@@ -13,12 +21,41 @@ const RecipeForm = () => {
 
   const [recipeName, setRecipeName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [category, setCategory] = useState<string>("entree");
+  const [category, setCategory] = useState<string>("");
   const [page, setPage] = useState<string>("");
   const [books, setBooks] = useState<any>([]);
   const [selectedBook, setSelectedBook] = useState<string>("");
 
+  const [errorsMsg, setErrorsMsg] = useState<any>({});
+
+  const validate = () => {
+    if (recipeName === undefined || recipeName === "") {
+      setErrorsMsg({ ...errorsMsg, recipeName: "Il faut un titre" });
+
+      return false;
+    }
+    if (category === undefined || category === "") {
+      setErrorsMsg({ ...errorsMsg, category: "Il faut choisir une catégorie" });
+      return false;
+    }
+    if (selectedBook === undefined || selectedBook === "") {
+      setErrorsMsg({
+        ...errorsMsg,
+        selectedBook: "Il faut choisir un livre ou en ajouter un",
+      });
+      return false;
+    }
+    if (page === undefined || page === "") {
+      setErrorsMsg({ ...errorsMsg, page: "Il faut une page" });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!validate()) return;
+
     const data = {
       title: recipeName,
       description,
@@ -29,7 +66,6 @@ const RecipeForm = () => {
     try {
       const newRecipe = await createRecipe(data);
       if (newRecipe) {
-        console.log("newRecipe", newRecipe);
         // ! todo alert success and redirect to recipe
       }
     } catch (error) {
@@ -50,12 +86,30 @@ const RecipeForm = () => {
     })();
   }, [showModal]);
 
+  useEffect(() => {
+    if (recipeName !== undefined || recipeName !== "")
+      setErrorsMsg({ ...errorsMsg, recipeName: null });
+  }, [recipeName]);
+
+  useEffect(() => {
+    if (category !== undefined || category !== "")
+      setErrorsMsg({ ...errorsMsg, category: null });
+  }, [category]);
+
+  useEffect(() => {
+    if (selectedBook !== undefined || selectedBook !== "")
+      setErrorsMsg({ ...errorsMsg, selectedBook: null });
+  }, [selectedBook]);
+
+  useEffect(() => {
+    if (page !== undefined || page !== "")
+      setErrorsMsg({ ...errorsMsg, page: null });
+  }, [page]);
+
   const BookModal = () => {
     return (
       <>
-        <Button shadow={2} onPress={() => setShowModal(true)}>
-          Ajouter un livre
-        </Button>
+        <Button onPress={() => setShowModal(true)}>Ajouter</Button>
         <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
           <Modal.Content maxWidth="400px">
             <Modal.CloseButton />
@@ -73,8 +127,8 @@ const RecipeForm = () => {
     <KeyboardAwareScrollView style={styles.container}>
       <FormControl style={styles.content}>
         <Stack space={5}>
-          <Stack>
-            <FormControl.Label>Titre de la recette</FormControl.Label>
+          <FormControl isRequired isInvalid={errorsMsg?.recipeName}>
+            <FormControl.Label>Titre de la recette </FormControl.Label>
             <Input
               variant="underlined"
               p={2}
@@ -82,40 +136,83 @@ const RecipeForm = () => {
               value={recipeName}
               onChange={(e) => setRecipeName(e.nativeEvent.text)}
             />
-          </Stack>
-          <Stack>
-            <FormControl.Label>Catégorie</FormControl.Label>
+            {errorsMsg?.recipeName && (
+              <FormControl.ErrorMessage>
+                {" "}
+                {errorsMsg?.recipeName}
+              </FormControl.ErrorMessage>
+            )}
+          </FormControl>
+          <FormControl isRequired isInvalid={errorsMsg?.category}>
+            <FormControl.Label>Catégorie </FormControl.Label>
             <Select
-              defaultValue={category}
+              placeholder="Choisir une catégorie"
               onValueChange={(e) => setCategory(e)}
             >
               <Select.Item label="Entrée ou apéro" value="entree" />
               <Select.Item label="Plat" value="plat" />
               <Select.Item label="Dessert" value="dessert" />
             </Select>
-          </Stack>
+            {errorsMsg?.category && (
+              <FormControl.ErrorMessage>
+                {" "}
+                {errorsMsg?.category}
+              </FormControl.ErrorMessage>
+            )}
+          </FormControl>
           <Stack space={3}>
-            <Stack>
-              <FormControl.Label>Livre</FormControl.Label>
-              <Select
-                placeholder="Choisir un livre"
-                onValueChange={(e) => setSelectedBook(e)}
+            <FormControl isRequired isInvalid={errorsMsg?.selectedBook}>
+              <FormControl.Label>Livre </FormControl.Label>
+              <HStack
+                space={2}
+                justifyContent="space-between"
+                alignItems="center"
               >
-                {books?.map((book: { _id: string; title: string }) => {
-                  return (
-                    <Select.Item
-                      key={book._id}
-                      label={book.title}
-                      value={book._id}
-                    />
-                  );
-                })}
-              </Select>
-            </Stack>
-            <Stack alignItems="flex-end" h={8}>
-              <BookModal />
-            </Stack>
+                <Select
+                  flex={2}
+                  placeholder="Choisir un livre"
+                  onValueChange={(e) => setSelectedBook(e)}
+                >
+                  {books?.map((book: { _id: string; title: string }) => {
+                    return (
+                      <Select.Item
+                        key={book._id}
+                        label={book.title}
+                        value={book._id}
+                      />
+                    );
+                  })}
+                </Select>
+                {errorsMsg?.selectedBook && (
+                  <FormControl.ErrorMessage>
+                    {" "}
+                    {errorsMsg?.selectedBook}
+                  </FormControl.ErrorMessage>
+                )}
+                <Stack flex={1}>
+                  <BookModal />
+                </Stack>
+              </HStack>
+            </FormControl>
           </Stack>
+
+          <FormControl isRequired isInvalid={errorsMsg?.page}>
+            <FormControl.Label>Page </FormControl.Label>
+            <Input
+              value={page}
+              onChange={(e) => setPage(e.nativeEvent.text)}
+              variant="underlined"
+              p={2}
+              placeholder="Numéro de page"
+              keyboardType="numeric"
+            />
+            {errorsMsg?.page && (
+              <FormControl.ErrorMessage>
+                {" "}
+                {errorsMsg?.page}
+              </FormControl.ErrorMessage>
+            )}
+          </FormControl>
           <Stack>
             <FormControl.Label>Description</FormControl.Label>
             <Input
@@ -126,18 +223,6 @@ const RecipeForm = () => {
               placeholder="Petite description"
             />
           </Stack>
-
-          <Stack>
-            <FormControl.Label>Page</FormControl.Label>
-            <Input
-              value={page}
-              onChange={(e) => setPage(e.nativeEvent.text)}
-              variant="underlined"
-              p={2}
-              placeholder="Numéro de page"
-            />
-          </Stack>
-
           <Button onPress={handleSubmit}>Soumettre</Button>
         </Stack>
       </FormControl>
