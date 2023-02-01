@@ -1,1 +1,1 @@
-export { default } from "./RecipeForm";
+export { default as RecipeForm } from "./RecipeForm";

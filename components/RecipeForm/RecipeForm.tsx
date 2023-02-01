@@ -4,7 +4,9 @@ import React, { FC, useEffect, useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { FormControl, Input, Stack, Button, Modal, Select } from "native-base";
-import BookForm from "../BookForm";
+import { BookForm } from "../BookForm";
+import { createRecipe } from "../../mw/recipes";
+import { getBooks } from "../../mw/books";
 
 const RecipeForm = () => {
   const [showModal, setShowModal] = useState(false);
@@ -24,28 +26,28 @@ const RecipeForm = () => {
       page,
       book: selectedBook,
     };
-    const res = await fetch("http://192.168.86.247:3001/recipe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const resData = await res.json();
+    try {
+      const newRecipe = await createRecipe(data);
+      if (newRecipe) {
+        console.log("newRecipe", newRecipe);
+        // ! todo alert success and redirect to recipe
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      const res = await fetch("http://192.168.86.247:3001/book", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const resData = await res.json();
-      setBooks(resData);
-    };
-    fetchBooks();
+    (async () => {
+      try {
+        const _books = await getBooks();
+        if (_books) {
+          setBooks(_books);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
   }, [showModal]);
 
   const BookModal = () => {
@@ -99,7 +101,7 @@ const RecipeForm = () => {
                 placeholder="Choisir un livre"
                 onValueChange={(e) => setSelectedBook(e)}
               >
-                {books.map((book: { _id: string; title: string }) => {
+                {books?.map((book: { _id: string; title: string }) => {
                   return (
                     <Select.Item
                       key={book._id}

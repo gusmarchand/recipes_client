@@ -1,21 +1,7 @@
-import { View } from "react-native";
 import React from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Button,
-} from "native-base";
+import { Center, NativeBaseProvider } from "native-base";
 
-import { RecipeForm } from "../components";
+import RecipeForm from "../components/RecipeForm/RecipeForm";
 
 const NewRecipe = () => {
   return (

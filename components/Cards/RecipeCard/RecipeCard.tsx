@@ -1,10 +1,12 @@
 import React, { FC, useState } from "react";
 
 import { capitalize } from "../../../utils/string";
-import { Button, Icon, Modal, Popover } from "native-base";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Button, Icon, Popover } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
 
 import { Text, VStack, HStack, Box, Divider } from "native-base";
+
+import { deleteRecipe } from "../../../mw/recipes";
 
 interface RecipeCardProps {
   recipe: any;
@@ -16,17 +18,17 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, navigation }) => {
 
   const handleDelete = async () => {
     const id = recipe?._id;
-    const res = await fetch(`http://192.168.86.247:3001/recipe/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (res.ok) {
-      navigation.navigate("Home");
-      setIsOpen(false);
+    try {
+      const deletedRecipe = await deleteRecipe(id);
+      if (deletedRecipe) {
+        navigation.navigate("AllRecipes");
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
   return (
     <Box borderWidth={1} borderRadius="md" w="100%">
       <VStack space="4" divider={<Divider />}>
@@ -54,7 +56,6 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, navigation }) => {
                     name="trash-outline"
                     size="xl"
                     color={"red.500"}
-                    // onPress={handleDelete}
                   />
                 </Button>
               );

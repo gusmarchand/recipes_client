@@ -1,20 +1,6 @@
 import { View } from "react-native";
 import React from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Button,
-  Divider,
-} from "native-base";
+import { VStack, Box, Divider } from "native-base";
 
 const BookCard = () => {
   return (

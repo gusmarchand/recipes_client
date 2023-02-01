@@ -1,26 +1,20 @@
 import { View, Alert } from "react-native";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC } from "react";
 import {
   Text,
-  Link,
   HStack,
   Center,
   Heading,
   Switch,
   useColorMode,
   NativeBaseProvider,
-  extendTheme,
   VStack,
-  Box,
   Button,
   Stack,
 } from "native-base";
-import ImagePicker from "../components/ImagePicker";
-import { Search } from "../components";
 
-// import { useNavigation } from "@react-navigation/native";
+import Search from "../components/Search/Search";
 
-// const navigation = useNavigation();
 interface HomeProps {
   navigation?: any;
 }

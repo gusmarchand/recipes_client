@@ -1,19 +1,7 @@
-import { View, Image } from "react-native";
+import { Image } from "react-native";
 import React, { FC, useEffect, useState } from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Button,
-} from "native-base";
+import { Text, Center, NativeBaseProvider } from "native-base";
+import { getBook } from "../mw/books";
 
 interface AllBooksProps {
   navigation?: any;
@@ -27,25 +15,20 @@ export interface BookProps {
 }
 
 const Book: FC<AllBooksProps> = ({ navigation, route }) => {
-  const bookId = route.params;
-
   const [book, setBook] = useState<BookProps>();
 
   useEffect(() => {
-    if (!bookId) navigation.navigate("All Recipes");
-    const fetchBook = async () => {
-      const res = await fetch(`http://192.168.86.247:3001/book/${bookId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const resData = await res.json();
-        setBook(resData);
+    const bookId = route.params;
+    (async () => {
+      try {
+        const _book = await getBook(bookId);
+        if (_book) {
+          setBook(_book);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    };
-    fetchBook();
+    })();
   }, [route.params]);
 
   // ! TODO - Add recipeCard component

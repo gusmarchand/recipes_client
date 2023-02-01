@@ -15,7 +15,7 @@ import {
   Button,
 } from "native-base";
 
-import { BookForm } from "../components";
+import BookForm from "../components/BookForm/BookForm";
 
 interface NewBookProps {
   navigation?: any;

@@ -1,19 +1,8 @@
-import { View, Text, TextInput } from "react-native";
+import { View, Text } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 
-import {
-  FormControl,
-  Input,
-  Stack,
-  Button,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Heading,
-  Center,
-  Select,
-} from "native-base";
+import { FormControl, Stack, Center } from "native-base";
+import { getBooks } from "../../mw/books";
 
 interface RecipesListProps {
   navigation?: any;
@@ -23,17 +12,16 @@ const BooksList: FC<RecipesListProps> = ({ navigation }) => {
   const [books, setBooks] = useState<any>([]);
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      const res = await fetch("http://192.168.86.247:3001/book", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const resData = await res.json();
-      setBooks(resData);
-    };
-    fetchBooks();
+    (async () => {
+      try {
+        const _books = await getBooks();
+        if (_books) {
+          setBooks(_books);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
   }, []);
 
   // ! TODO - Add recipeCard component

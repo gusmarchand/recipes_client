@@ -1,35 +1,14 @@
-import {
-  View,
-  Text,
-  TextInput,
-  KeyboardAvoidingView,
-  Image,
-  StyleSheet,
-  Pressable,
-} from "react-native";
-import React, { FC, useEffect, useState } from "react";
+import { Image, StyleSheet, Pressable } from "react-native";
+import React, { FC, useState } from "react";
 
-import {
-  FormControl,
-  Input,
-  Stack,
-  Button,
-  HStack,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Heading,
-  Center,
-  Select,
-  ScrollView,
-  Icon,
-} from "native-base";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { FormControl, Input, Stack, Button, HStack, Icon } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
 
 import * as ImagePicker from "expo-image-picker";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
+import { createBook } from "../../mw/books";
+import { getBookCoverUrl } from "../../utils/url";
+import { getBookInfo, uploadImgToCloudinary } from "../../mw/externals";
 
 interface BookFormProps {
   setModalOpen?: any;
@@ -45,12 +24,10 @@ const BookForm: FC<BookFormProps> = ({
   const [title, setTitle] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
   const [imgUrl, setImgUrl] = useState<string>("");
-
   const [image, setImage] = useState<any>("");
-
   const [isbn, setIsbn] = useState<string>("");
+
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -70,82 +47,57 @@ const BookForm: FC<BookFormProps> = ({
       name: "image.jpg",
     };
 
-    const dataToCloudinary = new FormData();
-    dataToCloudinary.append("file", imageToFetch as any);
-    dataToCloudinary.append("upload_preset", "qnktrbpo");
+    let imgFromCloudinary = "";
 
-    const postImgToCloudinary = await fetch(
-      "https://api.cloudinary.com/v1_1/gusappprecipes/image/upload",
-      {
-        method: "POST",
-        body: dataToCloudinary,
+    try {
+      const img = await uploadImgToCloudinary(imageToFetch);
+      if (img) {
+        imgFromCloudinary = img.secure_url;
       }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        return data;
-      });
-
-    setImgUrl(postImgToCloudinary.secure_url);
+    } catch (error) {
+      console.log(error);
+    }
 
     const data = {
       title,
       author,
-      imgUrl,
+      imgUrl: imgFromCloudinary || imgUrl,
     };
-    const res = await fetch("http://192.168.86.247:3001/book", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const resData = await res.json();
 
-    if (resData._id) {
-      setAuthor("");
-      setTitle("");
-      setImage("");
-      !isFromRecipeForm && navigation.navigate("AllBooks");
-      setModalOpen && setModalOpen(false);
+    try {
+      const resData = await createBook(data);
+      if (resData._id) {
+        setAuthor("");
+        setTitle("");
+        setImage("");
+        !isFromRecipeForm && navigation.navigate("AllBooks");
+        setModalOpen && setModalOpen(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const handleSubmitIsbn = async () => {
-    const res = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+    try {
+      const bookInfos = await getBookInfo(isbn);
+      console.log(bookInfos);
+      const _isbn =
+        isbn || bookInfos.items[0].volumeInfo.industryIdentifiers[1].identifier;
+      const bookImgUrl = getBookCoverUrl(_isbn, "M");
+
+      if (bookInfos.items[0].volumeInfo.title) {
+        setTitle(bookInfos.items[0].volumeInfo.title);
       }
-    );
-    const resData = await res.json();
-
-    // const bookInfo = await fetch(
-    //   `https://www.googleapis.com/books/v1/volumes/${resData.items[0].id}`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   }
-    // );
-
-    const _isbn =
-      isbn || resData.items[0].volumeInfo.industryIdentifiers[1].identifier;
-    const bookImgUrl = `https://covers.openlibrary.org/b/isbn/${_isbn}-M.jpg`;
-
-    if (resData.items[0].volumeInfo.title) {
-      setTitle(resData.items[0].volumeInfo.title);
-    }
-    if (resData.items[0].volumeInfo.authors) {
-      setAuthor(resData.items[0].volumeInfo.authors[0]);
-    }
-    if (bookImgUrl) {
-      setImage(bookImgUrl);
-      setImgUrl(bookImgUrl);
+      if (bookInfos.items[0].volumeInfo.authors) {
+        setAuthor(bookInfos.items[0].volumeInfo.authors[0]);
+      }
+      if (bookImgUrl) {
+        setImage(bookImgUrl);
+        setImgUrl(bookImgUrl);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -156,6 +108,7 @@ const BookForm: FC<BookFormProps> = ({
           <Stack>
             <FormControl.Label>Titre du livre</FormControl.Label>
             <Input
+              mandatory
               variant="underlined"
               p={2}
               placeholder="titre"

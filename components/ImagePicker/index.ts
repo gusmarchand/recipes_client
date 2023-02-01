@@ -1,1 +1,1 @@
-export { default } from "./ImagePickerButton";
+export { default as ImagePickerButton } from "./ImagePickerButton";

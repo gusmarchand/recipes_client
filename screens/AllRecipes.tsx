@@ -1,21 +1,7 @@
-import { View } from "react-native";
 import React, { FC } from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Button,
-} from "native-base";
+import { Center, NativeBaseProvider } from "native-base";
 
-import { RecipesList } from "../components";
+import RecipesList from "../components/RecipesList/RecipesList";
 
 interface AllRecipesProps {
   navigation?: any;

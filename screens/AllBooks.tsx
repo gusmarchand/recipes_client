@@ -1,21 +1,8 @@
 import { View } from "react-native";
 import React, { FC } from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-  Button,
-} from "native-base";
+import { Center, NativeBaseProvider } from "native-base";
 
-import { BooksList } from "../components";
+import BooksList from "../components/BooksList/BooksList";
 
 interface AllBooksProps {
   navigation?: any;

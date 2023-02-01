@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState } from "react";
 import { Text, Center, NativeBaseProvider } from "native-base";
 
-import { RecipeCard } from "../components/Cards";
-import { BookProps } from "./Book";
+import RecipeCard from "../components/Cards/RecipeCard/RecipeCard";
+import { getRecipe } from "../mw/recipes";
 
 interface AllRecipesProps {
   navigation?: any;
@@ -18,25 +18,20 @@ interface Recipe {
 }
 
 const Recipe: FC<AllRecipesProps> = ({ navigation, route }) => {
-  const recipeId = route.params;
-
   const [recipe, setRecipe] = useState<Recipe>();
 
   useEffect(() => {
-    if (!recipeId) navigation.navigate("All Recipes");
-    const fetchRecipe = async () => {
-      const res = await fetch(`http://192.168.86.247:3001/recipe/${recipeId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const resData = await res.json();
-        setRecipe(resData);
+    const recipeId = route.params;
+    (async () => {
+      try {
+        const _recipe = await getRecipe(recipeId);
+        if (_recipe) {
+          setRecipe(_recipe);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    };
-    fetchRecipe();
+    })();
   }, [route.params]);
 
   // ! TODO - Add recipeCard component

@@ -1,2 +1,2 @@
-export { RecipeCard } from "./RecipeCard";
-export { BookCard } from "./BookCard";
+export { default as RecipeCard } from "./RecipeCard";
+export { default as BookCard } from "./BookCard";

@@ -1,1 +1,1 @@
-export { default } from "./BooksList";
+export { default as BooksList } from "./BooksList";
