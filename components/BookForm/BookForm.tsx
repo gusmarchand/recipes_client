@@ -46,7 +46,13 @@ const BookForm: FC<BookFormProps> = ({
   const [scanned, setScanned] = useState<boolean>(false);
   const [isScanOk, SetIsScanOk] = useState<boolean>(false);
 
-  const handleBarCodeScanned = async ({ type, data }) => {
+  const handleBarCodeScanned: ({
+    type,
+    data,
+  }: {
+    type: any;
+    data: any;
+  }) => void = ({ type, data }) => {
     setScanned(true);
     handleSubmitIsbn(data);
   };
@@ -193,7 +199,6 @@ const BookForm: FC<BookFormProps> = ({
           <View style={styles.barCodeBox}>
             <BarCodeScanner
               onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-              // style={{ height: 400, width: 400 }}
               style={StyleSheet.absoluteFillObject}
             />
           </View>
@@ -287,16 +292,6 @@ const BookForm: FC<BookFormProps> = ({
               <Button onPress={() => setIsScannerRequested(true)}>
                 Scanner
               </Button>
-              {/* <FormControl.Label>ISBN</FormControl.Label>
-              <Input
-                variant="underlined"
-                p={2}
-                placeholder="ISBN"
-                value={isbn}
-                onChange={(e) => setIsbn(e.nativeEvent.text)}
-              />
-
-              <Button onPress={() => handleSubmitIsbn()}>whith ISBN</Button> */}
             </Stack>
             <Button onPress={handleSubmitForm}>Soumettre</Button>
           </FormControl>

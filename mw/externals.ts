@@ -42,3 +42,19 @@ export const uploadImgToCloudinary = async (imgUrl: any) => {
   const img = await res.json();
   return img;
 };
+
+export const uploadJsonToCloudinary = async (json: any) => {
+  const formData = new FormData();
+  formData.append("file", json);
+  formData.append("upload_preset", "qnktrbpo");
+
+  const res = await fetch(`${CLOUDINARY_API}/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    throw new Error("Error fetching json to Cloudinary");
+  }
+  const jsonFile = await res.json();
+  return jsonFile;
+};

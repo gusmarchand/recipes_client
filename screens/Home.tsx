@@ -16,7 +16,6 @@ import {
 } from "native-base";
 
 import Search from "../components/Search/Search";
-import { stylingProps } from "native-base/lib/typescript/theme/tools";
 
 interface HomeProps {
   navigation?: any;
@@ -75,65 +74,6 @@ const Home: FC<HomeProps> = ({ navigation }) => {
               </HStack>
             </VStack>
 
-<<<<<<< Updated upstream
-        <VStack space={20} paddingTop="30" px={2} alignItems="center">
-          <VStack space={5} alignItems="center">
-            <Heading size="lg">
-              Les Recettes <Image source={salad} alt="salad.png" size="xs" />
-            </Heading>
-            <HStack space={5}>
-              <Button
-                h={16}
-                width="48%"
-                primary
-                onPress={() => navigation.navigate("AllRecipes")}
-              >
-                <Text fontSize={11} fontWeight="bold">
-                  Voir toutes les recettes
-                </Text>
-              </Button>
-              <Button
-                h={16}
-                width="48%"
-                primary
-                onPress={() => navigation.navigate("NewRecipe")}
-              >
-                <Text fontSize={11} fontWeight="bold">
-                  Ajouter une recette
-                </Text>
-              </Button>
-            </HStack>
-          </VStack>
-
-          <VStack space={5} alignItems="center">
-            <Heading size="lg">
-              Les Livres <Image source={book} alt="book.png" size="xs" />
-            </Heading>
-            <HStack space={5}>
-              <Button
-                h={16}
-                width="48%"
-                primary
-                onPress={() => navigation.navigate("AllBooks")}
-              >
-                <Text fontSize={11} fontWeight="bold">
-                  Voir toutes les livres
-                </Text>
-              </Button>
-              <Button
-                h={16}
-                width="48%"
-                primary
-                onPress={() => navigation.navigate("NewBook")}
-              >
-                <Text fontSize={11} fontWeight="bold">
-                  Ajouter un livre
-                </Text>
-              </Button>
-            </HStack>
-          </VStack>
-        </VStack>
-=======
             <VStack space={5} alignItems="center">
               <Heading size="2xl">
                 Les Livres{" "}
@@ -168,7 +108,6 @@ const Home: FC<HomeProps> = ({ navigation }) => {
             </VStack>
           </VStack>
         </KeyboardAvoidingView>
->>>>>>> Stashed changes
       </Center>
       {/* <ToggleDarkMode /> */}
     </NativeBaseProvider>

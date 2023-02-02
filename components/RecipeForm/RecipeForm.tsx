@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Pressable } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -12,10 +12,12 @@ import {
   Modal,
   Select,
   HStack,
+  Icon,
 } from "native-base";
 import { BookForm } from "../BookForm";
 import { createRecipe } from "../../mw/recipes";
 import { getBooks } from "../../mw/books";
+import { Ionicons } from "@expo/vector-icons";
 
 interface RecipeFormProps {
   navigation?: any;
@@ -29,10 +31,24 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
   const [category, setCategory] = useState<string>("");
   const [page, setPage] = useState<string>("");
   const [books, setBooks] = useState<any>([]);
+  const [tempIngredient, setTempIngredient] = useState<any>("");
+  const [ingredients, setIngredients] = useState<any>([]);
   const [selectedBook, setSelectedBook] = useState<string>("");
   const [link, setLink] = useState<string>("");
 
   const [errorsMsg, setErrorsMsg] = useState<any>({});
+
+  const handleAddIngredient = () => {
+    if (tempIngredient === "") return;
+    setIngredients([...ingredients, tempIngredient]);
+    setTempIngredient("");
+  };
+
+  const handleRemoveIngredient = (index: number) => {
+    const newIngredients = [...ingredients];
+    newIngredients.splice(index, 1);
+    setIngredients(newIngredients);
+  };
 
   const validate = () => {
     if (recipeName === undefined || recipeName === "") {
@@ -106,7 +122,7 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
   const BookModal = () => {
     return (
       <>
-        <Button onPress={() => setShowModal(true)}>Ajouter</Button>
+        <Button onPress={() => setShowModal(true)}>Nouveau</Button>
         <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
           <Modal.Content maxWidth="400px">
             <Modal.CloseButton />
@@ -123,7 +139,7 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <FormControl style={styles.content}>
-        <Stack space={5}>
+        <Stack space={5} paddingBottom={10}>
           <FormControl isRequired isInvalid={errorsMsg?.recipeName}>
             <FormControl.Label>Titre de la recette </FormControl.Label>
             <Input
@@ -157,37 +173,43 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
               </FormControl.ErrorMessage>
             )}
           </FormControl>
-          <Stack space={3}>
-            <FormControl>
-              <FormControl.Label>Livre </FormControl.Label>
-              <HStack
-                space={2}
-                justifyContent="space-between"
-                alignItems="center"
+          <FormControl>
+            <FormControl.Label>Livre </FormControl.Label>
+            <HStack
+              space={2}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Select
+                flex={2}
+                placeholder="Choisir un livre"
+                onValueChange={(e) => setSelectedBook(e)}
+                selectedValue={
+                  selectedBook.length > 0 ? selectedBook.split("-")[1] : ""
+                }
               >
-                <Select
-                  flex={2}
-                  placeholder="Choisir un livre"
-                  onValueChange={(e) => setSelectedBook(e)}
-                >
-                  {books?.map((book: { _id: string; title: string }) => {
+                {books?.map(
+                  (book: { _id: string; title: string; author: string }) => {
                     return (
                       <Select.Item
                         key={book._id}
-                        label={book.title}
+                        label={book?.title}
                         value={book._id}
                       />
                     );
-                  })}
-                </Select>
+                  }
+                )}
+              </Select>
 
-                <Stack flex={1}>
+              <Stack flex={1}>
+                {selectedBook ? (
+                  <Button onPress={() => setSelectedBook("")}>Annuler</Button>
+                ) : (
                   <BookModal />
-                </Stack>
-              </HStack>
-            </FormControl>
-          </Stack>
-
+                )}
+              </Stack>
+            </HStack>
+          </FormControl>
           {selectedBook && (
             <FormControl isRequired isInvalid={errorsMsg?.page}>
               <FormControl.Label>Page </FormControl.Label>
@@ -207,7 +229,7 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
               )}
             </FormControl>
           )}
-          <Stack>
+          <FormControl>
             <FormControl.Label>Description</FormControl.Label>
             <Input
               value={description}
@@ -216,7 +238,8 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
               p={2}
               placeholder="Petite description"
             />
-          </Stack>
+          </FormControl>
+
           <Stack>
             <FormControl.Label>Lien</FormControl.Label>
             <Input
@@ -227,8 +250,63 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
               placeholder="Lien vers la recette"
             />
           </Stack>
-          <Button onPress={handleSubmit}>Soumettre</Button>
+          <Stack>
+            <FormControl.Label>Ingrédients</FormControl.Label>
+            <HStack
+              space={2}
+              justifyContent="space-between"
+              alignItems="center"
+              paddingBottom={2}
+            >
+              <Input
+                flex={2}
+                variant="underlined"
+                p={2}
+                placeholder="Ajouter un ingrédient"
+                value={tempIngredient}
+                onChange={(e) => setTempIngredient(e.nativeEvent.text)}
+                onSubmitEditing={(e) => {
+                  handleAddIngredient();
+                }}
+                blurOnSubmit={false}
+              />
+              <Button flex={1} onPress={handleAddIngredient}>
+                Ajouter
+              </Button>
+            </HStack>
+            {ingredients &&
+              ingredients.map((ingredient: any, index: number) => {
+                return (
+                  <HStack
+                    borderWidth={1}
+                    borderColor="gray.200"
+                    borderRadius={5}
+                    key={index}
+                    space={2}
+                    paddingY={1}
+                    paddingLeft={2}
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Text color="gray.400" fontSize={11}>
+                      {ingredient}
+                    </Text>
+                    <Pressable onPress={() => handleRemoveIngredient(index)}>
+                      <Icon
+                        as={Ionicons}
+                        name="close-circle-outline"
+                        size="lg"
+                        color="gray.400"
+                      />
+                    </Pressable>
+                  </HStack>
+                );
+              })}
+          </Stack>
         </Stack>
+        <Button onPress={handleSubmit} size="lg">
+          Enregistrer la recette
+        </Button>
       </FormControl>
     </KeyboardAwareScrollView>
   );
@@ -236,15 +314,15 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: "20%",
+    marginTop: "5%",
     width: "100%",
     flex: 1,
   },
   content: {
     width: "100%",
     flex: 1,
-
-    padding: 20,
+    padding: 10,
+    paddingBottom: 200,
   },
 });
 

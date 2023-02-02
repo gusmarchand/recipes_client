@@ -1,4 +1,4 @@
-import { Image } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 import { Text, Center, NativeBaseProvider } from "native-base";
 import { getBook } from "../mw/books";
@@ -40,6 +40,7 @@ const Book: FC<AllBooksProps> = ({ navigation, route }) => {
       <Center
         _dark={{ bg: "blueGray.900" }}
         _light={{ bg: "blueGray.50" }}
+        marginBottom={50}
         px={4}
         flex={1}
       >
@@ -53,6 +54,7 @@ const Book: FC<AllBooksProps> = ({ navigation, route }) => {
       <Text
         p={5}
         mb={30}
+        style={styles.description}
         numberOfLines={seeMore ? 100 : 2}
         onPress={() => setSeeMore(!seeMore)}
       >
@@ -61,5 +63,15 @@ const Book: FC<AllBooksProps> = ({ navigation, route }) => {
     </NativeBaseProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  description: {
+    textAlign: "justify",
+    zIndex: 20,
+    backgroundColor: "white",
+    position: "absolute",
+    bottom: 0,
+  },
+});
 
 export default Book;
