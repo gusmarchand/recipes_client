@@ -12,10 +12,13 @@ export interface BookProps {
   title: string;
   author: string;
   imgUrl?: string;
+  description?: string;
 }
 
 const Book: FC<AllBooksProps> = ({ navigation, route }) => {
   const [book, setBook] = useState<BookProps>();
+
+  const [seeMore, setSeeMore] = useState<boolean>(false);
 
   useEffect(() => {
     const bookId = route.params;
@@ -47,6 +50,14 @@ const Book: FC<AllBooksProps> = ({ navigation, route }) => {
           style={{ width: 250, height: 400, resizeMode: "contain" }}
         />
       </Center>
+      <Text
+        p={5}
+        mb={30}
+        numberOfLines={seeMore ? 100 : 2}
+        onPress={() => setSeeMore(!seeMore)}
+      >
+        {book?.description}
+      </Text>
     </NativeBaseProvider>
   );
 };

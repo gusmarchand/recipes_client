@@ -1,9 +1,13 @@
-import React from "react";
+import React, { FC } from "react";
 import { Center, NativeBaseProvider } from "native-base";
 
 import RecipeForm from "../components/RecipeForm/RecipeForm";
 
-const NewRecipe = () => {
+interface NewRecipeProps {
+  navigation?: any;
+}
+
+const NewRecipe: FC<NewRecipeProps> = ({ navigation }) => {
   return (
     <NativeBaseProvider>
       <Center
@@ -12,7 +16,7 @@ const NewRecipe = () => {
         px={4}
         flex={1}
       >
-        <RecipeForm />
+        <RecipeForm navigation={navigation} />
       </Center>
     </NativeBaseProvider>
   );

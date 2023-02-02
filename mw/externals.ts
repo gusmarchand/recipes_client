@@ -12,7 +12,19 @@ export const getBookInfo = async (isbn: string) => {
     throw new Error("Error fetching book info from Google Books");
   }
   const book = await res.json();
-  return book;
+
+  const bookInfo = await fetch(`${GOOGLE_BOOKS_API}/${book?.items[0].id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!bookInfo.ok) {
+    throw new Error("Error fetching book info from Google Books");
+  }
+  const bookInfoData = await bookInfo.json();
+  return bookInfoData;
 };
 
 export const uploadImgToCloudinary = async (imgUrl: any) => {

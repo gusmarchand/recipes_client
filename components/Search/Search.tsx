@@ -14,10 +14,6 @@ const Search: FC<SearchProps> = ({ navigation }) => {
 
   const inputRef = useRef<HTMLElement>(null);
 
-  const handleChangeTerm = (e: any) => {
-    setSearchTerm(normalize(e.nativeEvent.text));
-  };
-
   const handlePressSuggestion = (id: string, items: string) => {
     setSearchTerm("");
     setShowModal(false);
@@ -49,8 +45,6 @@ const Search: FC<SearchProps> = ({ navigation }) => {
     });
   }, []);
 
-  if (data?.length === 0) return null;
-
   return (
     <FormControl style={{ position: "absolute", width: "100%" }}>
       <FormControl.Label>
@@ -59,7 +53,7 @@ const Search: FC<SearchProps> = ({ navigation }) => {
       <Input
         ref={inputRef}
         value={searchTerm}
-        onChange={handleChangeTerm}
+        onChange={(e) => setSearchTerm(normalize(e.nativeEvent.text))}
         placeholder="Rechercher"
       ></Input>
 

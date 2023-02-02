@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -7,6 +7,7 @@ import {
   FormControl,
   Input,
   Stack,
+  Text,
   Button,
   Modal,
   Select,
@@ -16,7 +17,11 @@ import { BookForm } from "../BookForm";
 import { createRecipe } from "../../mw/recipes";
 import { getBooks } from "../../mw/books";
 
-const RecipeForm = () => {
+interface RecipeFormProps {
+  navigation?: any;
+}
+
+const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
 
   const [recipeName, setRecipeName] = useState<string>("");
@@ -25,6 +30,7 @@ const RecipeForm = () => {
   const [page, setPage] = useState<string>("");
   const [books, setBooks] = useState<any>([]);
   const [selectedBook, setSelectedBook] = useState<string>("");
+  const [link, setLink] = useState<string>("");
 
   const [errorsMsg, setErrorsMsg] = useState<any>({});
 
@@ -38,14 +44,8 @@ const RecipeForm = () => {
       setErrorsMsg({ ...errorsMsg, category: "Il faut choisir une catégorie" });
       return false;
     }
-    if (selectedBook === undefined || selectedBook === "") {
-      setErrorsMsg({
-        ...errorsMsg,
-        selectedBook: "Il faut choisir un livre ou en ajouter un",
-      });
-      return false;
-    }
-    if (page === undefined || page === "") {
+
+    if (selectedBook && (page === undefined || page === "")) {
       setErrorsMsg({ ...errorsMsg, page: "Il faut une page" });
       return false;
     }
@@ -60,12 +60,14 @@ const RecipeForm = () => {
       title: recipeName,
       description,
       category,
-      page,
-      book: selectedBook,
+      page: page || null,
+      book: selectedBook || null,
+      link: link || null,
     };
     try {
       const newRecipe = await createRecipe(data);
       if (newRecipe) {
+        navigation.navigate("Home");
         // ! todo alert success and redirect to recipe
       }
     } catch (error) {
@@ -95,11 +97,6 @@ const RecipeForm = () => {
     if (category !== undefined || category !== "")
       setErrorsMsg({ ...errorsMsg, category: null });
   }, [category]);
-
-  useEffect(() => {
-    if (selectedBook !== undefined || selectedBook !== "")
-      setErrorsMsg({ ...errorsMsg, selectedBook: null });
-  }, [selectedBook]);
 
   useEffect(() => {
     if (page !== undefined || page !== "")
@@ -161,7 +158,7 @@ const RecipeForm = () => {
             )}
           </FormControl>
           <Stack space={3}>
-            <FormControl isRequired isInvalid={errorsMsg?.selectedBook}>
+            <FormControl>
               <FormControl.Label>Livre </FormControl.Label>
               <HStack
                 space={2}
@@ -183,12 +180,7 @@ const RecipeForm = () => {
                     );
                   })}
                 </Select>
-                {errorsMsg?.selectedBook && (
-                  <FormControl.ErrorMessage>
-                    {" "}
-                    {errorsMsg?.selectedBook}
-                  </FormControl.ErrorMessage>
-                )}
+
                 <Stack flex={1}>
                   <BookModal />
                 </Stack>
@@ -196,23 +188,25 @@ const RecipeForm = () => {
             </FormControl>
           </Stack>
 
-          <FormControl isRequired isInvalid={errorsMsg?.page}>
-            <FormControl.Label>Page </FormControl.Label>
-            <Input
-              value={page}
-              onChange={(e) => setPage(e.nativeEvent.text)}
-              variant="underlined"
-              p={2}
-              placeholder="Numéro de page"
-              keyboardType="numeric"
-            />
-            {errorsMsg?.page && (
-              <FormControl.ErrorMessage>
-                {" "}
-                {errorsMsg?.page}
-              </FormControl.ErrorMessage>
-            )}
-          </FormControl>
+          {selectedBook && (
+            <FormControl isRequired isInvalid={errorsMsg?.page}>
+              <FormControl.Label>Page </FormControl.Label>
+              <Input
+                value={page}
+                onChange={(e) => setPage(e.nativeEvent.text)}
+                variant="underlined"
+                p={2}
+                placeholder="Numéro de page"
+                keyboardType="numeric"
+              />
+              {errorsMsg?.page && (
+                <FormControl.ErrorMessage>
+                  {" "}
+                  {errorsMsg?.page}
+                </FormControl.ErrorMessage>
+              )}
+            </FormControl>
+          )}
           <Stack>
             <FormControl.Label>Description</FormControl.Label>
             <Input
@@ -221,6 +215,16 @@ const RecipeForm = () => {
               variant="underlined"
               p={2}
               placeholder="Petite description"
+            />
+          </Stack>
+          <Stack>
+            <FormControl.Label>Lien</FormControl.Label>
+            <Input
+              value={link}
+              onChange={(e) => setLink(e.nativeEvent.text)}
+              variant="underlined"
+              p={2}
+              placeholder="Lien vers la recette"
             />
           </Stack>
           <Button onPress={handleSubmit}>Soumettre</Button>

@@ -23,7 +23,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.augustin.le.dev.recipes_frontend"
     },
     "web": {
       "favicon": "./assets/favicon.png"

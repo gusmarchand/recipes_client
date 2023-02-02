@@ -1,12 +1,13 @@
 import React, { FC, useState } from "react";
 
 import { capitalize } from "../../../utils/string";
-import { Button, Icon, Popover } from "native-base";
+import { Button, Icon, Link, Popover } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 
 import { Text, VStack, HStack, Box, Divider } from "native-base";
 
 import { deleteRecipe } from "../../../mw/recipes";
+import { Pressable } from "react-native";
 
 interface RecipeCardProps {
   recipe: any;
@@ -21,7 +22,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, navigation }) => {
     try {
       const deletedRecipe = await deleteRecipe(id);
       if (deletedRecipe) {
-        navigation.navigate("AllRecipes");
+        navigation.navigate("Home");
         setIsOpen(false);
       }
     } catch (error) {
@@ -84,26 +85,34 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, navigation }) => {
             </Popover.Content>
           </Popover>
         </HStack>
-        <Box px="4">
+        <Box px="4" pb="4">
           <Text fontSize={14}>{recipe && capitalize(recipe?.description)}</Text>
         </Box>
-        <HStack
-          px="4"
-          pb="4"
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Text
-            fontWeight="bold"
+        {recipe?.link?.length > 0 && (
+          <Box px="4" pb="4">
+            <Link href={recipe.link}>
+              <Text fontSize={14}>{recipe?.link && recipe?.link}</Text>
+            </Link>
+          </Box>
+        )}
+        {recipe?.book && (
+          <Pressable
             onPress={() => navigation.navigate("Book", recipe?.book?._id)}
           >
-            {recipe?.book?.title}{" "}
-          </Text>
-          <Text fontWeight="light" fontStyle="italic" fontSize={12}>
-            à la page {recipe?.page}
-          </Text>
-        </HStack>
+            <HStack
+              px="4"
+              pb="4"
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Text fontWeight="bold">{recipe?.book?.title} </Text>
+              <Text fontWeight="light" fontStyle="italic" fontSize={12}>
+                à la page {recipe?.page}
+              </Text>
+            </HStack>
+          </Pressable>
+        )}
       </VStack>
     </Box>
   );
