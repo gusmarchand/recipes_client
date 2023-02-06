@@ -13,6 +13,7 @@ import {
   Select,
   HStack,
   Icon,
+  Radio,
 } from "native-base";
 import { BookForm } from "../BookForm";
 import { createRecipe } from "../../mw/recipes";
@@ -29,6 +30,7 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
   const [recipeName, setRecipeName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [category, setCategory] = useState<string>("");
+  const [isVeggie, setIsVeggie] = useState<string>("Non");
   const [page, setPage] = useState<string>("");
   const [books, setBooks] = useState<any>([]);
   const [tempIngredient, setTempIngredient] = useState<any>("");
@@ -40,7 +42,7 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
 
   const handleAddIngredient = () => {
     if (tempIngredient === "") return;
-    setIngredients([...ingredients, tempIngredient]);
+    setIngredients([...ingredients, tempIngredient.trim()]);
     setTempIngredient("");
   };
 
@@ -79,6 +81,8 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
       page: page || null,
       book: selectedBook || null,
       link: link || null,
+      recipeIngredient: ingredients,
+      isVeggie: isVeggie === "Oui" ? true : false,
     };
     try {
       const newRecipe = await createRecipe(data);
@@ -166,6 +170,33 @@ const RecipeForm: FC<RecipeFormProps> = ({ navigation }) => {
               <Select.Item label="Plat" value="plat" />
               <Select.Item label="Dessert" value="dessert" />
             </Select>
+            {errorsMsg?.category && (
+              <FormControl.ErrorMessage>
+                {" "}
+                {errorsMsg?.category}
+              </FormControl.ErrorMessage>
+            )}
+          </FormControl>
+          <FormControl>
+            <FormControl.Label>Végétarien ? </FormControl.Label>
+            <Radio.Group
+              flexDirection="row"
+              paddingX={5}
+              justifyContent={"space-between"}
+              name="isveggie"
+              accessibilityLabel="is veggie?"
+              value={isVeggie}
+              onChange={(nextValue) => {
+                setIsVeggie(nextValue);
+              }}
+            >
+              <Radio value="Non" my={1}>
+                Non
+              </Radio>
+              <Radio value="Oui" my={1}>
+                Oui
+              </Radio>
+            </Radio.Group>
             {errorsMsg?.category && (
               <FormControl.ErrorMessage>
                 {" "}

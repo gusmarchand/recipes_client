@@ -1,5 +1,8 @@
+import { REACT_APP_API_URL } from "@env";
+const API_URL = REACT_APP_API_URL;
 const GOOGLE_BOOKS_API = "https://www.googleapis.com/books/v1/volumes";
 const CLOUDINARY_API = "https://api.cloudinary.com/v1_1/gusappprecipes/image";
+const GETBRING_API = "https://api.getbring.com/rest/bringrecipes/deeplink";
 
 export const getBookInfo = async (isbn: string) => {
   const res = await fetch(`${GOOGLE_BOOKS_API}?q=isbn:${isbn}`, {
@@ -57,4 +60,28 @@ export const uploadJsonToCloudinary = async (json: any) => {
   }
   const jsonFile = await res.json();
   return jsonFile;
+};
+
+export const getBringsLink = async (id: string) => {
+  const _body = {
+    url: `${API_URL}/recipe/${id}/ingredients`,
+    baseQuantity: 4,
+    requestedQuantity: 4,
+    source: "app",
+    // sha1GoogleAdId: "{sha1 hashed Google AdId}",
+    // sha1AppleIdfa: "{sha1 hashed Apple IDFA}",
+  };
+
+  const res = await fetch(GETBRING_API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(_body),
+  });
+  if (!res.ok) {
+    throw new Error("Error fetching ingredients link from GetBring");
+  }
+  const ingredientsToBringLink = await res.json();
+  return ingredientsToBringLink?.deeplink;
 };

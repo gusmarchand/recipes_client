@@ -1,4 +1,5 @@
-const API_URL = "http://192.168.86.247:3001";
+import { REACT_APP_API_URL } from "@env";
+const API_URL = REACT_APP_API_URL;
 
 export const getRecipes = async () => {
   const res = await fetch(`${API_URL}/recipe`, {
@@ -56,3 +57,17 @@ export const deleteRecipe = async (id: string) => {
   const deletedRecipe = await res.json();
   return deletedRecipe;
 };
+
+// export const getIngredients = async (id: string) => {
+//   const res = await fetch(`${API_URL}/recipe/${id}/ingredients`, {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   });
+//   if (!res.ok) {
+//     throw new Error("Error fetching ingredients");
+//   }
+//   const ingredientsLink = await res.json();
+//   return ingredientsLink;
+// };

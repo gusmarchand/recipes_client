@@ -22,8 +22,6 @@ interface HomeProps {
 }
 
 const Home: FC<HomeProps> = ({ navigation }) => {
-  const salad = require("../assets/salad.png");
-  const book = require("../assets/book.png");
   return (
     <NativeBaseProvider>
       <Center

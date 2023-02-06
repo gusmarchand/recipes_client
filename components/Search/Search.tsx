@@ -3,6 +3,9 @@ import React, { FC, useState, useEffect, useRef } from "react";
 import { Input, FormControl } from "native-base";
 import { normalize } from "../../utils/";
 
+import { getRecipes } from "../../mw/recipes";
+import { getBooks } from "../../mw/books";
+
 interface SearchProps {
   navigation?: any;
 }
@@ -27,43 +30,34 @@ const Search: FC<SearchProps> = ({ navigation }) => {
   }, [searchTerm]);
 
   useEffect(() => {
-    Promise.all([
-      fetch("http://192.168.86.247:3001/recipe", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => res.json()),
-      fetch("http://192.168.86.247:3001/book", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => res.json()),
-    ]).then(([res1, res2]) => {
-      setData([...res1, ...res2]);
-    });
+    const fetchData = async () => {
+      const recipes = await getRecipes();
+      const books = await getBooks();
+      setData([...recipes, ...books]);
+    };
+    fetchData();
   }, []);
 
   return (
-    <FormControl style={{ position: "absolute", width: "100%" }}>
-      <FormControl.Label>
-        Recherche de recettes, livres, auteurs...
-      </FormControl.Label>
-      <Input
-        ref={inputRef}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(normalize(e.nativeEvent.text))}
-        placeholder="Rechercher"
-      ></Input>
-
+    <>
+      <FormControl style={{ position: "absolute", width: "100%" }}>
+        <FormControl.Label>
+          Recherche de recettes, livres, auteurs...
+        </FormControl.Label>
+        <Input
+          ref={inputRef}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.nativeEvent.text)}
+          placeholder="Rechercher"
+        ></Input>
+      </FormControl>
       {showModal && (
         <View style={styles.searchResults}>
           {data
             .filter((val: any) => {
               return (
-                normalize(val?.title).includes(searchTerm.toLowerCase()) ||
-                normalize(val?.author).includes(searchTerm.toLowerCase())
+                normalize(val?.title).includes(normalize(searchTerm)) ||
+                normalize(val?.author).includes(normalize(searchTerm))
               );
             })
             .map((val: any) => {
@@ -85,17 +79,15 @@ const Search: FC<SearchProps> = ({ navigation }) => {
             })}
         </View>
       )}
-    </FormControl>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   searchResults: {
+    top: 80,
     width: "100%",
-
     flexDirection: "column",
-    // borderBottomWidth: 1,
-    // borderBottomColor: "#ccc",
     backgroundColor: "#fff",
     zIndex: 50,
     paddingTop: 10,
@@ -105,7 +97,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     padding: 10,
-    // borderBottomWidth: 1,
+    borderBottomWidth: 1,
   },
   tagText: {
     color: "grey",

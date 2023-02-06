@@ -1,4 +1,5 @@
-const API_URL = "http://192.168.86.247:3001";
+import { REACT_APP_API_URL } from "@env";
+const API_URL = REACT_APP_API_URL;
 
 export const getBooks = async () => {
   const res = await fetch(`${API_URL}/book`, {
@@ -55,4 +56,18 @@ export const deleteBook = async (id: string) => {
   }
   const deletedBook = await res.json();
   return deletedBook;
+};
+
+const getRecipesInBook = async (id: string) => {
+  const res = await fetch(`${API_URL}/book/${id}/recipes`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) {
+    throw new Error("Error fetching recipes in book");
+  }
+  const recipes = await res.json();
+  return recipes;
 };

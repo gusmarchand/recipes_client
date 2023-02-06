@@ -1,16 +1,6 @@
 import React from "react";
 import { SSRProvider } from "@react-aria/ssr";
-import {
-  Text,
-  Link,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  Box,
-} from "native-base";
+import { extendTheme } from "native-base";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -23,6 +13,9 @@ import BookScreen from "./screens/Book";
 import NewBookScreen from "./screens/NewBook";
 import AllBooksScreen from "./screens/AllBooks";
 
+import { REACT_APP_API_URL } from "@env";
+const API_URL = REACT_APP_API_URL;
+console.log("API FROM HOME", API_URL);
 // Define the config
 const config = {
   useSystemColorMode: false,
