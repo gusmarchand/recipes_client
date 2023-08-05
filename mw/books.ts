@@ -1,4 +1,5 @@
-import { REACT_APP_API_URL } from "@env";
+import {REACT_APP_API_URL} from "@env";
+
 const API_URL = REACT_APP_API_URL;
 
 export const getBooks = async () => {
@@ -54,8 +55,7 @@ export const deleteBook = async (id: string) => {
   if (!res.ok) {
     throw new Error("Error deleting book");
   }
-  const deletedBook = await res.json();
-  return deletedBook;
+  return await res.json();
 };
 
 const getRecipesInBook = async (id: string) => {
@@ -68,6 +68,5 @@ const getRecipesInBook = async (id: string) => {
   if (!res.ok) {
     throw new Error("Error fetching recipes in book");
   }
-  const recipes = await res.json();
-  return recipes;
+  return await res.json();
 };

@@ -13,7 +13,7 @@ import BookScreen from "./screens/Book";
 import NewBookScreen from "./screens/NewBook";
 import AllBooksScreen from "./screens/AllBooks";
 
-import { REACT_APP_API_URL } from "@env";
+import { REACT_APP_API_URL } from '@env';
 const API_URL = REACT_APP_API_URL;
 console.log("API FROM HOME", API_URL);
 // Define the config
