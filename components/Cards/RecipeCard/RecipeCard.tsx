@@ -55,24 +55,26 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, navigation }) => {
     <Box borderWidth={1} borderRadius="md" w="100%">
       <VStack space="4" divider={<Divider />}>
         <HStack
-          px="4"
+          px="2"
           pt="4"
-          justifyContent="space-between"
+          justifyContent="center"
           alignItems="center"
         >
-          <HStack>
-            <Text fontSize={20} fontWeight="extrabold">
-              {recipe && capitalize(recipe?.title)}
+          <HStack
+              alignItems="center"
+          >
+            <Text fontSize={20} fontWeight="extrabold" size='80%' >
+              {recipe && capitalize(recipe?.title) + "  "}
+              {recipe?.isVeggie && (
+                  <Icon
+                      as={Ionicons}
+                      pl="4"
+                      name="leaf-outline"
+                      size="lg"
+                      color={"green.500"}
+                  />
+              )}
             </Text>
-            {recipe?.isVeggie && (
-              <Icon
-                as={Ionicons}
-                ml="2"
-                name="leaf-outline"
-                size="lg"
-                color={"green.500"}
-              />
-            )}
           </HStack>
           <Popover
             placement="left"
@@ -98,7 +100,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, navigation }) => {
             <Popover.Content accessibilityLabel="Delete Customerd" w="56">
               <Popover.Header>Supprimer la recette</Popover.Header>
               <Popover.Body>
-                Veux-tu vrameent supprimer cette recette ?
+                Veux-tu vraiment supprimer cette recette ?
               </Popover.Body>
               <Popover.Footer justifyContent="flex-end">
                 <Button.Group space={2}>
@@ -146,33 +148,33 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, navigation }) => {
           </Pressable>
         )}
 
-        {recipe?.recipeIngredient?.length > 0 && (
-          <Pressable
-            onPress={() => {
-              handlePressIngredients(recipe?._id);
-            }}
-          >
-            <HStack
-              px="4"
-              pb="4"
-              direction="row"
-              justifyContent="flex-start"
-              alignItems="center"
-            >
-              {recipe?.recipeIngredient?.map(
-                (ingredient: any, index: number) => (
-                  <Text key={index} fontSize={14}>
-                    {ingredient}
-                    {index < recipe?.recipeIngredient?.length - 1 && ", "}
-                  </Text>
-                )
-              )}
-            </HStack>
-            {/* <Link href="https://api.getbring.com/rest/bringrecipes/deeplink?url={}&source=web&baseQuantity=4&requestedQuantity=4">
-              touch here
-            </Link> */}
-          </Pressable>
-        )}
+        {/*{recipe?.recipeIngredient?.length > 0 && (*/}
+        {/*  <Pressable*/}
+        {/*    onPress={() => {*/}
+        {/*      handlePressIngredients(recipe?._id);*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <HStack*/}
+        {/*      px="4"*/}
+        {/*      pb="4"*/}
+        {/*      direction="row"*/}
+        {/*      justifyContent="flex-start"*/}
+        {/*      alignItems="center"*/}
+        {/*    >*/}
+        {/*      {recipe?.recipeIngredient?.map(*/}
+        {/*        (ingredient: any, index: number) => (*/}
+        {/*          <Text key={index} fontSize={14}>*/}
+        {/*            {ingredient}*/}
+        {/*            {index < recipe?.recipeIngredient?.length - 1 && ", "}*/}
+        {/*          </Text>*/}
+        {/*        )*/}
+        {/*      )}*/}
+        {/*    </HStack>*/}
+        {/*    /!*<Link href="https://api.getbring.com/rest/bringrecipes/deeplink?url={}&source=web&baseQuantity=4&requestedQuantity=4">*!/*/}
+        {/*    /!*  touch here*!/*/}
+        {/*    /!*</Link>*!/*/}
+        {/*  </Pressable>*/}
+        {/*)}*/}
       </VStack>
     </Box>
   );
